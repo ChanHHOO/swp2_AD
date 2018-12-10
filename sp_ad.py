@@ -6,8 +6,18 @@ from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import QLayout, QGridLayout
 from PyQt5.QtWidgets import QTextEdit, QLineEdit, QToolButton, QGraphicsScene
 from job_list import job
+from PyQt5 import QtGui, QtCore
 from PyQt5.QtGui import QIcon, QPixmap, QImage
-class AD(QWidget):
+
+class Ranking(QWidget):
+    def __init__(self, parent=None):
+        super(Ranking, self).__init__(parent)
+        self.aa = QLabel()
+        lay = QGridLayout()
+        self.setLayout(lay)
+
+
+class SutdaGame(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.user_info = []
@@ -41,13 +51,13 @@ class AD(QWidget):
         self.lefted_money = 500
         self.left_money.setText(str(self.lefted_money))
 
-        self.user_name = QLineEdit()
-        self.user_name.setAlignment(Qt.AlignRight)
+        self.name_edit = QLineEdit()
+        self.name_edit.setAlignment(Qt.AlignRight)
 
 
         centerLayout = QGridLayout()
         centerLayout.addWidget(self.left_money, 0,0,5,5)
-        centerLayout.addWidget(self.user_name, 1,0,1,1)
+        centerLayout.addWidget(self.name_edit, 1,0,5,5)
 
         self.btn_Betting = QToolButton()
         self.btn_Betting.setText("BETTING")
@@ -62,12 +72,22 @@ class AD(QWidget):
 
         self.btn_Save = QToolButton()
         self.btn_Save.setText("SAVE")
-        self.btn_Save.clicked.connect(self.Save)
+        self.btn_Save.clicked.connect(self.save)
+
+        self.btn_Login = QToolButton()
+        self.btn_Login.setText("Login")
+        self.btn_Login.clicked.connect(self.start_game)
+
+        self.btn_Ranking = QToolButton()
+        self.btn_Ranking.setText("rank")
+        self.btn_Ranking.clicked.connect(self.ranking)
 
         right_laydout = QGridLayout()
         right_laydout.addWidget(self.btn_Betting, 0, 0)
         right_laydout.addWidget(self.btn_Die, 1, 0)
         right_laydout.addWidget(self.btn_Save, 2, 0)
+        right_laydout.addWidget(self.btn_Login, 3, 0)
+        right_laydout.addWidget(self.btn_Ranking, 4, 0)
 
         # Layout placement
         mainLayout = QGridLayout()
@@ -81,16 +101,31 @@ class AD(QWidget):
         pass
 
     def start_game(self):
-        pass
-    def Save(self):
-        f = open('user_info.txt', 'w')
+        self.name_edit.setReadOnly(True)
+
+
+    def save(self):
+        f = open('user_info.txt', 'r')
         lines = f.readlines()
         f.close()
         self.count = 0
         for line in lines:
             information = line.rstrip()
             self.user_info.append(information)
-            
+        self.user_info.append(self.left_money.text() + " " +self.name_edit.text())
+        f = open('user_info.txt', 'w')
+
+        for info in self.user_info:
+            f.write(info + "\n")
+
+
+
+
+
+
+    def ranking(self):
+        rank = Ranking(self)
+        rank.show()
 
         # 타임아웃 이벤트가 발생하면 호출되는 메서드
         # 어떤 타이머에 의해서 호출되었는지 확인
@@ -101,10 +136,7 @@ class AD(QWidget):
 if __name__ == '__main__':
     import sys
     app = QApplication(sys.argv)
-    game = AD()
-
-
+    game = SutdaGame()
     game.show()
-
     sys.exit(app.exec_())
 
